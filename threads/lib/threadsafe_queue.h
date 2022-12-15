@@ -46,24 +46,22 @@ namespace threadsafe_containers
                 pthread_cond_destroy(&empty_condition);
                 pthread_cond_destroy(&full_condition);
             }
-
             bool full() const
             {
                 return data_queue.size() == max_size;
             }
-            bool empty()    const
+            bool empty() const
             {
                 return data_queue.empty();
             }
 
-            bool push(const T& value)
+            void push(const T& value)
             {
                 // Enter critical section with mutex lock
                 pthread_mutex_lock(&mutex);
 
-                // Check if the queue is full or stopped:
-                if (full())
-                    // Wait until some space frees
+                // Wait until some space frees
+                while(full())
                     pthread_cond_wait(&full_condition, &mutex);
 
                 data_queue.push(value);
@@ -73,14 +71,33 @@ namespace threadsafe_containers
                 pthread_cond_signal(&empty_condition);
                 pthread_mutex_unlock(&mutex);
             }
-            experimental::optional<T> pop()
+
+            bool try_push(const T& value)
+            {
+                pthread_mutex_lock(&mutex);
+
+                // Do not wait until space frees
+                if (full())
+                {
+                    pthread_mutex_unlock(&mutex);
+                    return -1;
+                }
+
+                data_queue.push(value);
+
+                // Leave critical section, then notify that queue is not empty now
+                // Unlock mutex
+                pthread_cond_signal(&empty_condition);
+                pthread_mutex_unlock(&mutex);
+            }
+
+            T pop()
             {
                 // Enter critical section with mutex lock
                 pthread_mutex_lock(&mutex);
 
-                // Check if queue is empty
-                if (empty())
-                    // If it is empty, then wait until push signal
+                // If queue is empty, then wait until push signal
+                while(empty())
                     pthread_cond_wait(&empty_condition, &mutex);
 
                 T result = data_queue.front();
@@ -91,7 +108,30 @@ namespace threadsafe_containers
                 pthread_cond_signal(&full_condition);
                 return result;
             }
+
+            experimental::optional<T> try_pop()
+            {
+                // Enter critical section with mutex lock
+                pthread_mutex_lock(&mutex);
+
+                // Check if queue is empty
+                if (empty())
+                {
+                    pthread_mutex_unlock(&mutex);
+                    return {};
+                }
+
+                T result = data_queue.front();
+                data_queue.pop();
+
+                // Leave critical section, unlock mutex, send signal that queue is not full anyway now
+                pthread_mutex_unlock(&mutex);
+                pthread_cond_signal(&full_condition);
+                return result;
+            }
     };
+
+
 }
 
 #endif //LAB3_THREADSAFE_QUEUE_H
