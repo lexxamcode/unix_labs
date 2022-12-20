@@ -29,11 +29,11 @@ namespace multithread_searching
         size_t size;
         do
         {
-            size = rand() % (maxsize + 1);
+            size = rand()%maxsize + 1;
         }while(size == 0);
 
         for (size_t i = 0; i < size; i++)
-            result.push_back(-100 + rand()% 200);
+            result.push_back(-10 + rand()% 20);
 
         return result;
     }
