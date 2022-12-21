@@ -1,0 +1,5 @@
+/home/oleksiy/CLionProjects/unix/threads/cmake-build-debug/CMakeFiles/mmult.dir
+/home/oleksiy/CLionProjects/unix/threads/cmake-build-debug/CMakeFiles/find_indices.dir
+/home/oleksiy/CLionProjects/unix/threads/cmake-build-debug/CMakeFiles/mainq.dir
+/home/oleksiy/CLionProjects/unix/threads/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/oleksiy/CLionProjects/unix/threads/cmake-build-debug/CMakeFiles/rebuild_cache.dir

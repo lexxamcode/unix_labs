@@ -20,7 +20,7 @@ namespace client_server_functions
 
     const unsigned short SERVER_PORT = 61337;
 
-    inline ostream& operator<<(ostream& stream, const sockaddr_in& addr)
+    inline ostream& operator << (ostream& stream, const sockaddr_in& addr)
     {
         union
         {
