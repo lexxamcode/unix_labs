@@ -11,10 +11,6 @@
 
 using namespace std;
 
-const string passwd = "/etc/passwd";
-const string shadow = "/etc/shadow";
-const string gshadow = "/etc/gshadow";
-
 struct user
 {
     int uid;
@@ -98,11 +94,8 @@ void parse_line_shadow(const string& line, user& parsed_user)
         parsed_user.password_hash = token;
 }
 
-void read_passwd(vector<user>& users)
+void read_passwd(ifstream& file, vector<user>& users)
 {
-    ifstream file;
-    file.open(passwd);
-
     string line;
     size_t i = 0;
     while(getline(file, line))
@@ -114,11 +107,8 @@ void read_passwd(vector<user>& users)
     file.close();
 }
 
-void read_shadow(vector<user>& users)
+void read_shadow(ifstream& file, vector<user>& users)
 {
-    ifstream file;
-    file.open(shadow);
-
     string line;
     while(getline(file, line))
     {
@@ -131,13 +121,8 @@ void read_shadow(vector<user>& users)
     file.close();
 }
 
-void read_gshadow(map<string, set<string>>& admins, map<string, set<string>>& members)
+void read_gshadow(ifstream& file, map<string, set<string>>& admins, map<string, set<string>>& members)
 {
-    ifstream file;
-    file.open(gshadow);
-
-    setuid(getuid()); // drop root rights
-
     string line;
     size_t i = 0;
     while(getline(file, line))
@@ -151,15 +136,24 @@ void read_gshadow(map<string, set<string>>& admins, map<string, set<string>>& me
 
 int main()
 {
-    system("sudo su");
-
     map<string, set<string>> all_admins;
     map<string, set<string>> all_members;
 
     vector<user> users;
-    read_shadow(users);
-    read_gshadow(all_admins, all_members);
-    read_passwd(users);
+
+    ifstream shadow;
+    shadow.open("/etc/shadow");
+    ifstream gshadow;
+    gshadow.open("/etc/gshadow");
+
+    setuid(getuid()); // drop root rights
+
+    ifstream passwd;
+    passwd.open("/etc/passwd");
+
+    read_shadow(shadow, users);
+    read_gshadow(gshadow, all_admins, all_members);
+    read_passwd(passwd, users);
 
     for (size_t i = 0; i < users.size(); i++)
     {
