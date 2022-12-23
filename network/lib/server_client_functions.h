@@ -125,10 +125,16 @@ namespace client_server_functions
                     {
                         request_size = recv(connected_socket, request, maxlength, 0);
                         cout << string_view(request, sizeof(request)) << endl;
-                        if (errno == ECONNRESET or (request_size < 1 && errno == ENOTCONN))
+                        if (errno == ECONNRESET or (request_size < 1 && errno == ENOTCONN) or string_view(request, request_size) == "q")
+                        {
+                            pthread_mutex_lock(&log_mutex);
+                            cout << "Disconnected from " << connected_address << endl;
+                            pthread_mutex_unlock(&log_mutex);
+
                             // client has reset the connection
                             // exit
                             break;
+                        }
                         if (request_size == 0)
                         {
                             response = "Request's length is too small. Try to send correct data";
@@ -183,10 +189,16 @@ namespace client_server_functions
                         {
                             request_size = recv(connected_socket, request, maxlength, 0);
 
-                            if (errno == ECONNRESET or (request_size < 1 && errno == ENOTCONN))
+                            if (errno == ECONNRESET or (request_size < 1 && errno == ENOTCONN) or string_view(request, request_size) == "q")
+                            {
+                                pthread_mutex_lock(&log_mutex);
+                                cout << "Disconnected from " << connected_address << endl;
+                                pthread_mutex_unlock(&log_mutex);
+
                                 // client has reset the connection
                                 // exit
                                 break;
+                            }
                             if (request_size == 0)
                             {
                                 response = "Request's length is too small. Try to send correct data";
@@ -231,10 +243,16 @@ namespace client_server_functions
                         {
                             request_size = recv(connected_socket, request, maxlength, 0);
 
-                            if (errno == ECONNRESET or (request_size < 1 && errno == ENOTCONN))
+                            if (errno == ECONNRESET or (request_size < 1 && errno == ENOTCONN) or string_view(request, request_size) == "q")
+                            {
+                                pthread_mutex_lock(&log_mutex);
+                                cout << "Disconnected from " << connected_address << endl;
+                                pthread_mutex_unlock(&log_mutex);
+
                                 // client has reset the connection
                                 // exit
                                 break;
+                            }
                             if (request_size == 0)
                             {
                                 response = "Request's length is too small. Try to send correct data";
@@ -291,10 +309,16 @@ namespace client_server_functions
                             {
                                 request_size = recv(connected_socket, request, maxlength, 0);
 
-                                if (errno == ECONNRESET or (request_size < 1 && errno == ENOTCONN))
+                                if (errno == ECONNRESET or (request_size < 1 && errno == ENOTCONN) or string_view(request, request_size) == "q")
+                                {
+                                    pthread_mutex_lock(&log_mutex);
+                                    cout << "Disconnected from " << connected_address << endl;
+                                    pthread_mutex_unlock(&log_mutex);
+
                                     // client has reset the connection
                                     // exit
                                     break;
+                                }
                                 if (request_size == 0)
                                 {
                                     response = "Request's length is too small. Try to send correct data";
