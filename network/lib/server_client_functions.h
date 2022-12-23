@@ -207,7 +207,7 @@ namespace client_server_functions
                                 }
                                 else
                                 {
-                                    response = "Yep that's it! Press Enter to continue!";
+                                    response = "Yep that's it!";
                                     send(connected_socket, response.c_str(), response.size(), 0);
                                     leads = false;
                                     break;
@@ -342,10 +342,9 @@ namespace client_server_functions
         int sock_fd = check(make_socket(SOCK_STREAM));
         check(connect(sock_fd, (sockaddr*)&dest_address, sizeof(dest_address)));
 
-        string message;
-
         while(true)
         {
+            string message = "";
             int size = check(recv(sock_fd, response_buffer, sizeof(response_buffer), 0));
 
             if (errno == ECONNRESET or (size < 1 && errno == ENOTCONN))
@@ -354,7 +353,8 @@ namespace client_server_functions
                 break;
 
             cout << string_view(response_buffer, size) << std::endl;
-            getline(cin, message);
+            while(message == "")
+                getline(cin, message);
             if (message == "q")
                 break;
             send(sock_fd, message.c_str(), message.size(), 0);
